@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>تسجيل طالب جديد - نور النبوة</title>
+  <style>
+    body { font-family: 'Tahoma', sans-serif; padding: 20px; background: #f9f9f9; }
+    form { background: #fff; padding: 20px; border-radius: 10px; max-width: 500px; margin: auto; box-shadow: 0 0 10px #ccc; }
+    label { display: block; margin-top: 15px; font-weight: bold; }
+    input, select { width: 100%; padding: 8px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; }
+    button { margin-top: 20px; background: green; color: white; padding: 10px; border: none; border-radius: 5px; width: 100%; }
+    .message { margin-top: 15px; padding: 10px; display: none; border-radius: 5px; }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+
+  <form id="registerForm">
+    <h2>تسجيل طالب جديد</h2>
+
+    <label>الاسم الكامل</label>
+    <input type="text" name="الاسم" required>
+
+    <label>الإيميل</label>
+    <input type="email" name="الإيميل" required>
+
+    <label>رقم الموبايل</label>
+    <input type="text" name="رقم الموبايل" required>
+
+    <label>كلمة السر</label>
+    <input type="password" name="كلمة السر" required>
+
+    <label>النوع</label>
+    <select name="النوع" required>
+      <option value="">اختر النوع</option>
+      <option value="ذكر">ذكر</option>
+      <option value="أنثى">أنثى</option>
+    </select>
+
+    <label>الدولة</label>
+    <input type="text" name="الدولة" required>
+
+    <label>المحافظة / المدينة</label>
+    <input type="text" name="المحافظة" required>
+
+    <button type="submit">تسجيل</button>
+
+    <div id="message" class="message"></div>
+  </form>
+
+  <script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycby4OtTnJTu6TSp3b22DD2ulyJV_w2BQMsQNNR1kJm3eziaDw0iZfoG0GMyV36KfCdO-Yg/exec';
+    const form = document.getElementById('registerForm');
+    const messageDiv = document.getElementById('message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const data = { action: 'registerStudent' };
+
+      formData.forEach((value, key) => {
+        data[key] = value;
+      });
+
+      try {
+        const res = await fetch(scriptURL, {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const result = await res.json();
+        if (result.success) {
+          messageDiv.textContent = '✅ تم التسجيل بنجاح!';
+          messageDiv.className = 'message success';
+          messageDiv.style.display = 'block';
+          form.reset();
+        } else {
+          messageDiv.textContent = '❌ فشل في التسجيل: ' + result.message;
+          messageDiv.className = 'message error';
+          messageDiv.style.display = 'block';
+        }
+
+      } catch (err) {
+        messageDiv.textContent = '❌ فشل الاتصال بالخادم';
+        messageDiv.className = 'message error';
+        messageDiv.style.display = 'block';
+      }
+    });
+  </script>
+
+</body>
+</html> 
